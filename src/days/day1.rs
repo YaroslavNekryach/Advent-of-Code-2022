@@ -1,10 +1,17 @@
-use crate::utils::{get_input, split_by_empty_line, split_lines};
+use crate::utils::{get_input, print_result, split_by_empty_line, split_lines};
 use std::str::FromStr;
+
 const DAY: u8 = 1;
 
 pub fn exec() {
     let input = get_input(DAY).unwrap();
-    let elves = split_by_empty_line(&input)
+    let parsed_input = parse(&input);
+    print_result(1, &part1(&parsed_input));
+    print_result(2, &part2(&parsed_input));
+}
+
+fn parse(input: &str) -> Vec<Vec<u64>> {
+    split_by_empty_line(input)
         .iter()
         .map(|elf| {
             split_lines(elf)
@@ -12,12 +19,7 @@ pub fn exec() {
                 .map(|v| u64::from_str(v.as_str()).unwrap())
                 .collect()
         })
-        .collect();
-
-    let part1_result = part1(&elves);
-    println!("Part 1 result {}", part1_result);
-    let part1_result = part2(&elves);
-    println!("Part 2 result {}", part1_result);
+        .collect()
 }
 
 fn part1(input: &Vec<Vec<u64>>) -> String {
@@ -32,4 +34,37 @@ fn part2(input: &Vec<Vec<u64>>) -> String {
 
 fn total_elf_cal(input: &Vec<Vec<u64>>) -> Vec<u64> {
     input.iter().map(|elf| elf.iter().sum()).collect()
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    #[test]
+    fn part1_test() {
+        let parsed_input = parse(INPUT);
+        let result = part1(&parsed_input);
+        assert_eq!(&result, "24000")
+    }
+
+    #[test]
+    fn part2_test() {
+        let parsed_input = parse(INPUT);
+        let result = part2(&parsed_input);
+        assert_eq!(&result, "45000")
+    }
+
+    const INPUT: &str = "1000
+2000
+3000
+
+4000
+
+5000
+6000
+
+7000
+8000
+9000
+
+10000";
 }

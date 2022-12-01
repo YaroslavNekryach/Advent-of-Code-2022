@@ -1,6 +1,5 @@
-
 use reqwest::blocking::Client;
-use reqwest::{Error};
+use reqwest::Error;
 
 const SESSION: &str = "53616c7465645f5f7998bb14334539d997cfee9321c8e5d3f72f056853a51a004b29784458b5208668ec450c9083a997dbe65a1ef7927c85173a2ee31e6f7065";
 const YEAR: &str = "2022";
@@ -18,20 +17,20 @@ pub fn get_input(day: u8) -> Result<String, Error> {
     Ok(text.strip_suffix("\n").unwrap_or(&text).to_string())
 }
 
-pub fn split_lines(input: &String) -> Vec<String> {
-    input.split("\n")
+pub fn split_lines(input: &str) -> Vec<String> {
+    input
+        .split("\n")
         .map(|v| v.to_string())
         .collect::<Vec<String>>()
 }
 
-pub fn split_by_empty_line(input: &String) -> Vec<String> {
-    input.split("\n\n")
+pub fn split_by_empty_line(input: &str) -> Vec<String> {
+    input
+        .split("\n\n")
         .map(|v| v.to_string())
         .collect::<Vec<String>>()
 }
 
-#[test]
-fn get_input_test() {
-    let result = split_lines(&get_input(1).unwrap());
-    println!("{:?}", result);
+pub fn print_result(part: u8, result: &str) {
+    println!("\x1b[34mPart {}:\x1b[0m \x1b[93m{}\x1b[0m", part, result);
 }
