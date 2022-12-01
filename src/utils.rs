@@ -17,20 +17,6 @@ pub fn get_input(day: u8) -> Result<String, Error> {
     Ok(text.strip_suffix("\n").unwrap_or(&text).to_string())
 }
 
-pub fn split_lines(input: &str) -> Vec<String> {
-    input
-        .split("\n")
-        .map(|v| v.to_string())
-        .collect::<Vec<String>>()
-}
-
-pub fn split_by_empty_line(input: &str) -> Vec<String> {
-    input
-        .split("\n\n")
-        .map(|v| v.to_string())
-        .collect::<Vec<String>>()
-}
-
 pub fn print_result(part: u8, result: &str) {
     println!("\x1b[34mPart {}:\x1b[0m \x1b[93m{}\x1b[0m", part, result);
 }

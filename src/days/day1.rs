@@ -1,5 +1,4 @@
-use crate::utils::{get_input, print_result, split_by_empty_line, split_lines};
-use std::str::FromStr;
+use crate::utils::{get_input, print_result};
 
 const DAY: u8 = 1;
 
@@ -11,28 +10,23 @@ pub fn exec() {
 }
 
 fn parse(input: &str) -> Vec<Vec<u64>> {
-    split_by_empty_line(input)
-        .iter()
-        .map(|elf| {
-            split_lines(elf)
-                .iter()
-                .map(|v| u64::from_str(v.as_str()).unwrap())
-                .collect()
-        })
+    input
+        .split("\n\n")
+        .map(|elf| elf.lines().map(|v| v.parse::<u64>().unwrap()).collect())
         .collect()
 }
 
-fn part1(input: &Vec<Vec<u64>>) -> String {
+fn part1(input: &[Vec<u64>]) -> String {
     total_elf_cal(input).iter().max().unwrap().to_string()
 }
 
-fn part2(input: &Vec<Vec<u64>>) -> String {
+fn part2(input: &[Vec<u64>]) -> String {
     let mut elf_cal = total_elf_cal(input);
-    elf_cal.sort();
-    elf_cal.iter().rev().take(3).sum::<u64>().to_string()
+    elf_cal.sort_unstable();
+    return elf_cal.iter().rev().take(3).sum::<u64>().to_string();
 }
 
-fn total_elf_cal(input: &Vec<Vec<u64>>) -> Vec<u64> {
+fn total_elf_cal(input: &[Vec<u64>]) -> Vec<u64> {
     input.iter().map(|elf| elf.iter().sum()).collect()
 }
 
