@@ -20,3 +20,17 @@ pub fn get_input(day: u8) -> Result<String, Error> {
 pub fn print_result(part: u8, result: &str) {
     println!("\x1b[34mPart {}:\x1b[0m \x1b[93m{}\x1b[0m", part, result);
 }
+
+pub trait SplitString {
+    fn split_by(&self, terminator: char) -> Result<(&str, &str), std::fmt::Error>;
+}
+
+impl SplitString for &str {
+    fn split_by(&self, terminator: char) -> Result<(&str, &str), std::fmt::Error> {
+        let split: Vec<&str> = self.split(terminator).collect();
+        if split.len() != 2 {
+            return Err(std::fmt::Error);
+        }
+        Ok((split[0], split[1]))
+    }
+}

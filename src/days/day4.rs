@@ -1,4 +1,4 @@
-use crate::utils::{get_input, print_result};
+use crate::utils::{get_input, print_result, SplitString};
 
 const DAY: u8 = 4;
 
@@ -37,10 +37,10 @@ impl TryFrom<&str> for Section {
     type Error = std::num::ParseIntError;
 
     fn try_from(s: &str) -> Result<Self, Self::Error> {
-        let split: Vec<&str> = s.split('-').collect();
+        let (p1, p2) = s.split_by('-').unwrap();
         Ok(Self {
-            from: split[0].parse()?,
-            to: split[1].parse()?,
+            from: p1.parse()?,
+            to: p2.parse()?,
         })
     }
 }
@@ -49,10 +49,11 @@ impl TryFrom<&str> for Pair {
     type Error = std::num::ParseIntError;
 
     fn try_from(s: &str) -> Result<Self, Self::Error> {
-        let split: Vec<&str> = s.split(',').collect();
+        // let split: Vec<&str> = s.split(',').collect();
+        let (p1, p2) = s.split_by(',').unwrap();
         Ok(Self {
-            section1: split[0].try_into()?,
-            section2: split[1].try_into()?,
+            section1: p1.try_into()?,
+            section2: p2.try_into()?,
         })
     }
 }
@@ -62,18 +63,17 @@ fn parse(input: &str) -> Vec<Pair> {
 }
 
 fn part1(input: &[Pair]) -> String {
-    input
-        .iter()
-        .map(Pair::contains)
-        .map(|c| c as u64)
-        .sum::<u64>()
-        .to_string()
+    part(input, Pair::contains)
 }
 
 fn part2(input: &[Pair]) -> String {
+    part(input, Pair::overlap)
+}
+
+fn part(input: &[Pair], check: fn(&Pair) -> bool) -> String {
     input
         .iter()
-        .map(Pair::overlap)
+        .map(check)
         .map(|c| c as u64)
         .sum::<u64>()
         .to_string()
