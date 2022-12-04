@@ -49,7 +49,6 @@ impl TryFrom<&str> for Pair {
     type Error = std::num::ParseIntError;
 
     fn try_from(s: &str) -> Result<Self, Self::Error> {
-        // let split: Vec<&str> = s.split(',').collect();
         let (p1, p2) = s.split_by(',').unwrap();
         Ok(Self {
             section1: p1.try_into()?,
