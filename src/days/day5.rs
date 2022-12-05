@@ -1,4 +1,5 @@
 use crate::utils::{Day, Result, SplitString};
+use itertools::Itertools;
 use regex::Regex;
 use std::collections::HashMap;
 use std::ops::Index;
@@ -28,10 +29,13 @@ impl Stacks {
             .split_whitespace()
             .map(|v| v.parse::<u8>().unwrap())
             .for_each(|index| stacks.init_stack(index));
+
         input.lines().rev().skip(1).for_each(|line| {
             line.chars().enumerate().for_each(|(index, value)| {
                 if value.is_alphabetic() {
-                    stacks.put((index as u8 - 1) / 4 + 1, value).unwrap();
+                    stacks
+                        .put((index as u8 - 1) / 4 + 1, &mut vec![value])
+                        .unwrap();
                 }
             })
         });
@@ -48,52 +52,29 @@ impl Stacks {
         self.stack.insert(index, Vec::new());
     }
 
-    fn put(&mut self, index: u8, item: Crate) -> Result<()> {
+    fn put(&mut self, index: u8, items: &mut Vec<Crate>) -> Result<()> {
         self.stack
             .get_mut(&index)
             .ok_or("Stack does not exist")?
-            .push(item);
+            .append(items);
         Ok(())
     }
 
-    fn get(&mut self, index: u8) -> Result<Crate> {
-        Ok(self
-            .stack
-            .get_mut(&index)
-            .ok_or("Stack does not exist")?
-            .pop()
-            .ok_or("Stack is empty")?)
+    fn get(&mut self, index: u8, count: u8) -> Result<Vec<Crate>> {
+        let stack = self.stack.get_mut(&index).ok_or("Stack does not exist")?;
+        Ok(stack.split_off(stack.len() - count as usize))
     }
 
-    fn move_crate(&mut self, from: u8, to: u8) -> Result<()> {
-        let item = self.get(from)?;
-        self.put(to, item)?;
-        Ok(())
-    }
-
-    pub fn exec_part1(&mut self, procedure: &Procedure) -> Result<()> {
-        for _ in 0..procedure.count {
-            self.move_crate(procedure.from, procedure.to)?;
-        }
-
-        Ok(())
-    }
-
-    pub fn exec_part2(&mut self, procedure: &Procedure) -> Result<()> {
-        let crates: Vec<Crate> = (0..procedure.count)
-            .map(|_| self.get(procedure.from).unwrap())
-            .collect();
-        crates
-            .iter()
-            .rev()
-            .for_each(|item| self.put(procedure.to, *item).unwrap());
+    fn move_crate(&mut self, from: u8, to: u8, count: u8) -> Result<()> {
+        let mut item = self.get(from, count)?;
+        self.put(to, &mut item)?;
         Ok(())
     }
 
     pub fn read_top_crates(&self) -> Result<String> {
         let mut result: Vec<Crate> = Vec::new();
-        for i in 1..self.stack.len() + 1 {
-            let c = self.stack.get(&(i as u8)).unwrap().last().unwrap();
+        for key in self.stack.keys().sorted() {
+            let c = self.stack.get(key).unwrap().last().unwrap();
             result.push(*c);
         }
         Ok(result.iter().collect())
@@ -136,16 +117,19 @@ impl Day<Input> for Day5 {
     }
 
     fn part1((mut stacks, procedures): Input) -> Result<String> {
-        procedures
-            .iter()
-            .for_each(|procedure| stacks.exec_part1(procedure).unwrap());
+        procedures.iter().for_each(|procedure| {
+            (0..procedure.count)
+                .for_each(|_| stacks.move_crate(procedure.from, procedure.to, 1).unwrap())
+        });
         stacks.read_top_crates()
     }
 
     fn part2((mut stacks, procedures): Input) -> Result<String> {
-        procedures
-            .iter()
-            .for_each(|procedure| stacks.exec_part2(procedure).unwrap());
+        procedures.iter().for_each(|procedure| {
+            stacks
+                .move_crate(procedure.from, procedure.to, procedure.count)
+                .unwrap()
+        });
         stacks.read_top_crates()
     }
 }
