@@ -1,6 +1,6 @@
 extern crate core;
 
-use crate::days::day1::Day1;
+use crate::days::day5::Day5;
 use crate::utils::Day;
 
 mod days;
@@ -10,7 +10,7 @@ fn main() {
     if false {
         all_days()
     }
-    Day1::exec().unwrap();
+    Day5::exec().unwrap();
 }
 
 fn all_days() {

@@ -27,11 +27,11 @@ pub fn parse_int(s: &str) -> u64 {
 }
 
 pub trait SplitString {
-    fn split_by(&self, terminator: char) -> Result<(&str, &str)>;
+    fn split_by(&self, terminator: &str) -> Result<(&str, &str)>;
 }
 
 impl SplitString for &str {
-    fn split_by(&self, terminator: char) -> Result<(&str, &str)> {
+    fn split_by(&self, terminator: &str) -> Result<(&str, &str)> {
         let split: Vec<&str> = self.split(terminator).collect();
         if split.len() != 2 {
             return Err(std::fmt::Error.into());

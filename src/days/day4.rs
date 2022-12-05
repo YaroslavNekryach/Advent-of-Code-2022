@@ -37,7 +37,7 @@ impl TryFrom<&str> for Section {
     type Error = std::num::ParseIntError;
 
     fn try_from(s: &str) -> Result<Self, Self::Error> {
-        let (p1, p2) = s.split_by('-').unwrap();
+        let (p1, p2) = s.split_by("-").unwrap();
         Ok(Self {
             from: p1.parse()?,
             to: p2.parse()?,
@@ -49,7 +49,7 @@ impl TryFrom<&str> for Pair {
     type Error = std::num::ParseIntError;
 
     fn try_from(s: &str) -> Result<Self, Self::Error> {
-        let (p1, p2) = s.split_by(',').unwrap();
+        let (p1, p2) = s.split_by(",").unwrap();
         Ok(Self {
             section1: p1.try_into()?,
             section2: p2.try_into()?,
