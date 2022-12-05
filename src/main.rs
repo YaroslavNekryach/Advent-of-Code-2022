@@ -14,7 +14,6 @@ fn main() {
 }
 
 fn all_days() {
-    days::day2::exec();
     days::day3::exec();
     days::day4::exec();
 }
