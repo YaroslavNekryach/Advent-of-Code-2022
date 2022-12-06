@@ -1,4 +1,4 @@
-use crate::utils::{parse_int, Day, Result};
+use crate::utils::{Day, Result};
 use itertools::Itertools;
 use std::collections::HashSet;
 
@@ -8,13 +8,14 @@ impl Day6 {
     const DAY: u8 = 6;
 
     pub fn part(input: String, window: usize) -> Result<String> {
-        let (pos, _) = input
+        Ok((input
             .chars()
             .collect::<Vec<_>>()
             .windows(window)
-            .find_position(|group| HashSet::<&char>::from_iter(group.iter()).len() == window)
-            .unwrap();
-        Ok((pos + window).to_string())
+            .position(|group| HashSet::<&char>::from_iter(group.iter()).len() == window)
+            .ok_or("Result not found")?
+            + window)
+            .to_string())
     }
 }
 
