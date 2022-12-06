@@ -1,5 +1,4 @@
 use crate::utils::{Day, Result};
-use itertools::Itertools;
 use std::collections::HashSet;
 
 pub struct Day6 {}
