@@ -1,6 +1,5 @@
-use crate::utils::{parse_int, Day, Result};
+use crate::utils::{Day, Result};
 use std::collections::HashSet;
-use std::fmt::format;
 
 pub struct Day8 {}
 
