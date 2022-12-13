@@ -9,6 +9,7 @@ dependencies = [
  "itertools",
  "regex",
  "reqwest",
+ "serde_json",
 ]
 
 [[package]]
