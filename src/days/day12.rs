@@ -4,6 +4,16 @@ pub struct Day12 {}
 
 impl Day12 {
     const DAY: u8 = 12;
+
+    pub fn map_char(c: char) -> char {
+        if c == 'S' {
+            return 'a';
+        }
+        if c == 'E' {
+            return 'z';
+        }
+        c
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -44,110 +54,37 @@ impl Day<Vec<Vec<char>>> for Day12 {
 
         while !queue.is_empty() {
             let pos = queue.remove(0);
-            if pos.x > 0 {
-                let x = pos.x - 1;
-                let y = pos.y;
-                let mut from = input[pos.y][pos.x];
-                let mut to = input[y][x];
-                if from == 'S' {
-                    from = 'a';
-                }
-                if from == 'E' {
-                    from = 'z';
-                }
-                if to == 'S' {
-                    to = 'a';
-                }
-                if to == 'E' {
-                    to = 'z';
-                }
+            let mut proc = |x: usize, y: usize| {
+                let from = Day12::map_char(input[pos.y][pos.x]);
+                let to = Day12::map_char(input[y][x]);
                 if (to as i32 - from as i32) <= 1 && result_map[y][x] < 0 {
                     result_map[y][x] = result_map[pos.y][pos.x] + 1;
                     queue.push(Pos { x, y });
                 }
+            };
+            if pos.x > 0 {
+                proc(pos.x - 1, pos.y);
             }
             if pos.y > 0 {
-                let x = pos.x;
-                let y = pos.y - 1;
-                let mut from = input[pos.y][pos.x];
-                let mut to = input[y][x];
-                if from == 'S' {
-                    from = 'a';
-                }
-                if from == 'E' {
-                    from = 'z';
-                }
-                if to == 'S' {
-                    to = 'a';
-                }
-                if to == 'E' {
-                    to = 'z';
-                }
-                if (to as i32 - from as i32) <= 1 && result_map[y][x] < 0 {
-                    result_map[y][x] = result_map[pos.y][pos.x] + 1;
-                    queue.push(Pos { x, y });
-                }
+                proc(pos.x, pos.y - 1);
             }
             if pos.x < x_size - 1 {
-                let x = pos.x + 1;
-                let y = pos.y;
-                let mut from = input[pos.y][pos.x];
-                let mut to = input[y][x];
-                if from == 'S' {
-                    from = 'a';
-                }
-                if from == 'E' {
-                    from = 'z';
-                }
-                if to == 'S' {
-                    to = 'a';
-                }
-                if to == 'E' {
-                    to = 'z';
-                }
-                if (to as i32 - from as i32) <= 1 && result_map[y][x] < 0 {
-                    result_map[y][x] = result_map[pos.y][pos.x] + 1;
-                    queue.push(Pos { x, y });
-                }
+                proc(pos.x + 1, pos.y);
             }
             if pos.y < y_size - 1 {
-                let x = pos.x;
-                let y = pos.y + 1;
-                let mut from = input[pos.y][pos.x];
-                let mut to = input[y][x];
-                if from == 'S' {
-                    from = 'a';
-                }
-                if from == 'E' {
-                    from = 'z';
-                }
-                if to == 'S' {
-                    to = 'a';
-                }
-                if to == 'E' {
-                    to = 'z';
-                }
-                if (to as i32 - from as i32) <= 1 && result_map[y][x] < 0 {
-                    result_map[y][x] = result_map[pos.y][pos.x] + 1;
-                    queue.push(Pos { x, y });
-                }
+                proc(pos.x, pos.y + 1);
             }
         }
-        // result_map.iter().for_each(|v| println!("{:>3?}", v));
         Ok(result_map[end.y][end.x].to_string())
     }
 
     fn part2(input: Vec<Vec<char>>) -> Result<String> {
-        let mut start: Pos = Pos { x: 0, y: 0 };
         let mut end: Pos = Pos { x: 0, y: 0 };
         let x_size = input[0].len();
         let y_size = input.len();
 
         for (yi, y) in input.iter().enumerate() {
             for (xi, x) in y.iter().enumerate() {
-                if *x == 'S' {
-                    start = Pos { x: xi, y: yi };
-                }
                 if *x == 'E' {
                     end = Pos { x: xi, y: yi };
                 }
@@ -160,93 +97,25 @@ impl Day<Vec<Vec<char>>> for Day12 {
 
         while !queue.is_empty() {
             let pos = queue.remove(0);
-            if pos.x > 0 {
-                let x = pos.x - 1;
-                let y = pos.y;
-                let mut from = input[pos.y][pos.x];
-                let mut to = input[y][x];
-                if from == 'S' {
-                    from = 'a';
-                }
-                if from == 'E' {
-                    from = 'z';
-                }
-                if to == 'S' {
-                    to = 'a';
-                }
-                if to == 'E' {
-                    to = 'z';
-                }
+            let mut proc = |x: usize, y: usize| {
+                let from = Day12::map_char(input[pos.y][pos.x]);
+                let to = Day12::map_char(input[y][x]);
                 if (from as i32 - to as i32) <= 1 && result_map[y][x] < 0 {
                     result_map[y][x] = result_map[pos.y][pos.x] + 1;
                     queue.push(Pos { x, y });
                 }
+            };
+            if pos.x > 0 {
+                proc(pos.x - 1, pos.y);
             }
             if pos.y > 0 {
-                let x = pos.x;
-                let y = pos.y - 1;
-                let mut from = input[pos.y][pos.x];
-                let mut to = input[y][x];
-                if from == 'S' {
-                    from = 'a';
-                }
-                if from == 'E' {
-                    from = 'z';
-                }
-                if to == 'S' {
-                    to = 'a';
-                }
-                if to == 'E' {
-                    to = 'z';
-                }
-                if (from as i32 - to as i32) <= 1 && result_map[y][x] < 0 {
-                    result_map[y][x] = result_map[pos.y][pos.x] + 1;
-                    queue.push(Pos { x, y });
-                }
+                proc(pos.x, pos.y - 1);
             }
             if pos.x < x_size - 1 {
-                let x = pos.x + 1;
-                let y = pos.y;
-                let mut from = input[pos.y][pos.x];
-                let mut to = input[y][x];
-                if from == 'S' {
-                    from = 'a';
-                }
-                if from == 'E' {
-                    from = 'z';
-                }
-                if to == 'S' {
-                    to = 'a';
-                }
-                if to == 'E' {
-                    to = 'z';
-                }
-                if (from as i32 - to as i32) <= 1 && result_map[y][x] < 0 {
-                    result_map[y][x] = result_map[pos.y][pos.x] + 1;
-                    queue.push(Pos { x, y });
-                }
+                proc(pos.x + 1, pos.y);
             }
             if pos.y < y_size - 1 {
-                let x = pos.x;
-                let y = pos.y + 1;
-                let mut from = input[pos.y][pos.x];
-                let mut to = input[y][x];
-                if from == 'S' {
-                    from = 'a';
-                }
-                if from == 'E' {
-                    from = 'z';
-                }
-                if to == 'S' {
-                    to = 'a';
-                }
-                if to == 'E' {
-                    to = 'z';
-                }
-                if (from as i32 - to as i32) <= 1 && result_map[y][x] < 0 {
-                    result_map[y][x] = result_map[pos.y][pos.x] + 1;
-                    queue.push(Pos { x, y });
-                }
+                proc(pos.x, pos.y + 1);
             }
         }
         let mut res_vec: Vec<i32> = Vec::new();
@@ -257,7 +126,6 @@ impl Day<Vec<Vec<char>>> for Day12 {
                 }
             }
         }
-        result_map.iter().for_each(|v| println!("{:>3?}", v));
 
         Ok(res_vec
             .iter()
