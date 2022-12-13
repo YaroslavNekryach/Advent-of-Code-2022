@@ -27,11 +27,7 @@ impl Day13 {
                         return res;
                     }
                 }
-                if a1.len() == a2.len() {
-                    Ordering::Equal
-                } else {
-                    Ordering::Less
-                }
+                a1.len().cmp(&a2.len())
             }
             (Value::Array(_), Value::Number(_)) => Day13::cmp(v1, &Value::Array(vec![v2.clone()])),
             (Value::Number(_), Value::Array(_)) => Day13::cmp(&Value::Array(vec![v1.clone()]), v2),
@@ -66,7 +62,6 @@ impl Day<Vec<(Value, Value)>> for Day13 {
                 Ordering::Less => i + 1,
                 _ => 0,
             })
-            // .inspect(|v| println!("{}", v))
             .sum::<usize>()
             .to_string())
     }
