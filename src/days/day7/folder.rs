@@ -1,7 +1,4 @@
 use crate::days::day7::file::File;
-use regex::Regex;
-use std::collections::HashMap;
-use std::ops::Index;
 
 #[derive(Clone, Debug)]
 pub struct Folder {

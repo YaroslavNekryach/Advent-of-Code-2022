@@ -152,7 +152,6 @@ impl Day<Vec<Instruction>> for Day7 {
             }
         }
         let need = 30000000 - (70000000 - folder_list.get("/").unwrap().size.unwrap());
-        println!("need {}", need);
 
         let result = folder_list
             .values()

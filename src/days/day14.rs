@@ -1,7 +1,6 @@
-use crate::utils::{parse_int, Day, Result, SplitString};
+use crate::utils::{Day, Result, SplitString};
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter, Write};
-use std::time::Instant;
 
 pub struct Day14 {}
 
@@ -175,12 +174,9 @@ impl Day<Vec<Vec<Pos>>> for Day14 {
     }
 
     fn part2(input: Vec<Vec<Pos>>) -> Result<String> {
-        let now = Instant::now();
         let mut cave = Cave::new();
         cave.build(input);
         while cave.drop_send(true) {}
-        let elapsed = now.elapsed();
-        println!("Elapsed: {:.2?}", elapsed);
         Ok(cave.send_count().to_string())
     }
 }

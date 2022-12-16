@@ -1,7 +1,6 @@
 use crate::utils::{Day, Pos, Result};
 use regex::Regex;
 use std::ops::Index;
-use std::time::Instant;
 
 pub struct Day15 {}
 

@@ -1,4 +1,4 @@
-use crate::utils::{parse_int, Day, Result};
+use crate::utils::{Day, Result};
 use std::collections::HashSet;
 
 pub struct Day9 {}
@@ -33,10 +33,6 @@ struct Pos {
 }
 
 impl Pos {
-    pub fn new(x: i64, y: i64) -> Self {
-        Self { x, y }
-    }
-
     pub fn left(&mut self) {
         self.x -= 1;
     }

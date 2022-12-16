@@ -1,4 +1,4 @@
-use crate::utils::{parse_int, Day, Result};
+use crate::utils::{Day, Result};
 
 pub struct Day12 {}
 

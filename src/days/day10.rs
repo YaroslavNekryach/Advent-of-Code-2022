@@ -1,5 +1,5 @@
 use crate::days::day10::Instruction::{Addx, Noop};
-use crate::utils::{parse_int, Day, Result};
+use crate::utils::{Day, Result};
 
 pub struct Day10 {}
 
@@ -23,7 +23,7 @@ impl Instruction {
         }
     }
 
-    fn to_string(&self) -> String {
+    fn _to_string(&self) -> String {
         match self {
             Noop => "noop".to_string(),
             Addx(v) => format!("addx {}", v),

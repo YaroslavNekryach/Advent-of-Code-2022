@@ -1,6 +1,5 @@
 use crate::days::day11::monkey::Monkey;
-use crate::utils::{parse_int, Day, Result};
-use std::time::Instant;
+use crate::utils::{Day, Result};
 
 pub struct Day11 {}
 
@@ -18,7 +17,6 @@ impl Day<Vec<Monkey>> for Day11 {
     }
 
     fn part1(mut input: Vec<Monkey>) -> Result<String> {
-        let now = Instant::now();
         for _ in 0..20 {
             for monkey_i in 0..input.len() {
                 while let Some((item, monkey)) = input[monkey_i].test(None) {
@@ -27,13 +25,10 @@ impl Day<Vec<Monkey>> for Day11 {
             }
         }
         input.sort_by(|a, b| a.inspections.cmp(&b.inspections));
-        let elapsed = now.elapsed();
-        println!("Part 1 execution time: {:.2?}", elapsed);
         Ok((input.pop().unwrap().inspections * input.pop().unwrap().inspections).to_string())
     }
 
     fn part2(mut input: Vec<Monkey>) -> Result<String> {
-        let now = Instant::now();
         let handler = input.iter().fold(1u64, |accum, item| accum * item.test);
         for _ in 0..10000 {
             for monkey_i in 0..input.len() {
@@ -43,8 +38,6 @@ impl Day<Vec<Monkey>> for Day11 {
             }
         }
         input.sort_by(|a, b| a.inspections.cmp(&b.inspections));
-        let elapsed = now.elapsed();
-        println!("Part 2 execution time: {:.2?}", elapsed);
         Ok((input.pop().unwrap().inspections * input.pop().unwrap().inspections).to_string())
     }
 }

@@ -1,11 +1,8 @@
 use crate::days::day11::operation::Operation;
 use crate::utils::parse_int;
-use regex::Regex;
-use std::ops::Index;
 
 #[derive(Clone, Debug)]
 pub struct Monkey {
-    index: u64,
     items: Vec<u64>,
     operation: Operation,
     pub test: u64,
@@ -40,13 +37,6 @@ impl Monkey {
 
     pub fn from_string(s: &str) -> Self {
         let lines: Vec<&str> = s.lines().collect();
-        let index: u64 = Regex::new(r"Monkey (\d+):")
-            .unwrap()
-            .captures(lines[0])
-            .unwrap()
-            .index(1)
-            .parse()
-            .unwrap();
         let items = lines[1]
             .split_terminator(": ")
             .last()
@@ -75,7 +65,6 @@ impl Monkey {
             .unwrap();
 
         Self {
-            index,
             items,
             operation,
             test,

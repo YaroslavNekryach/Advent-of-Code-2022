@@ -48,6 +48,7 @@ pub type Result<T> = result::Result<T, Box<dyn Error>>;
 
 pub trait Day<T: Clone> {
     fn exec() -> Result<()> {
+        println!("Day {}:", Self::day());
         let input = get_input(Self::day())?;
         let parsed_input = Self::parse(&input)?;
         let now = Instant::now();

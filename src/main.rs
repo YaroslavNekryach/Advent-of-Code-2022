@@ -21,19 +21,19 @@ mod days;
 mod utils;
 
 fn main() {
-    // Day1::exec().unwrap();
-    // Day2::exec().unwrap();
-    // Day3::exec().unwrap();
-    // Day4::exec().unwrap();
-    // Day5::exec().unwrap();
-    // Day6::exec().unwrap();
-    // Day7::exec().unwrap();
-    // Day8::exec().unwrap();
-    // Day9::exec().unwrap();
-    // Day10::exec().unwrap();
-    // Day11::exec().unwrap();
-    // Day12::exec().unwrap();
-    // Day13::exec().unwrap();
-    // Day14::exec().unwrap();
+    Day1::exec().unwrap();
+    Day2::exec().unwrap();
+    Day3::exec().unwrap();
+    Day4::exec().unwrap();
+    Day5::exec().unwrap();
+    Day6::exec().unwrap();
+    Day7::exec().unwrap();
+    Day8::exec().unwrap();
+    Day9::exec().unwrap();
+    Day10::exec().unwrap();
+    Day11::exec().unwrap();
+    Day12::exec().unwrap();
+    Day13::exec().unwrap();
+    Day14::exec().unwrap();
     Day15::exec().unwrap();
 }
