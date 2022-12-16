@@ -1,6 +1,7 @@
 use reqwest::blocking::Client;
 use std::error::Error;
 use std::result;
+use std::time::{Duration, Instant};
 
 const SESSION: &str = "53616c7465645f5f7998bb14334539d997cfee9321c8e5d3f72f056853a51a004b29784458b5208668ec450c9083a997dbe65a1ef7927c85173a2ee31e6f7065";
 const YEAR: &str = "2022";
@@ -18,8 +19,11 @@ pub fn get_input(day: u8) -> Result<String> {
     Ok(text.strip_suffix("\n").unwrap_or(&text).to_string())
 }
 
-pub fn print_result(part: u8, result: &str) {
-    println!("\x1b[34mPart {}:\x1b[0m \x1b[93m{}\x1b[0m", part, result);
+pub fn print_result(part: u8, result: &str, duration: Duration) {
+    println!(
+        "\x1b[34mPart {}:\x1b[0m \x1b[93m{}\x1b[0m ({:.2?})",
+        part, result, duration
+    );
 }
 
 pub fn parse_int(s: &str) -> u64 {
@@ -46,8 +50,10 @@ pub trait Day<T: Clone> {
     fn exec() -> Result<()> {
         let input = get_input(Self::day())?;
         let parsed_input = Self::parse(&input)?;
-        print_result(1, &Self::part1(parsed_input.clone())?);
-        print_result(2, &Self::part2(parsed_input)?);
+        let now = Instant::now();
+        print_result(1, &Self::part1(parsed_input.clone())?, now.elapsed());
+        let now = Instant::now();
+        print_result(2, &Self::part2(parsed_input)?, now.elapsed());
         Ok(())
     }
 
@@ -56,4 +62,16 @@ pub trait Day<T: Clone> {
     fn parse(input: &str) -> Result<T>;
     fn part1(input: T) -> Result<String>;
     fn part2(input: T) -> Result<String>;
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct Pos<T> {
+    pub x: T,
+    pub y: T,
+}
+
+impl<T> Pos<T> {
+    pub fn new(x: T, y: T) -> Self {
+        Pos { x, y }
+    }
 }
