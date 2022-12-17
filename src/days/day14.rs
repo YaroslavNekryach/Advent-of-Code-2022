@@ -184,7 +184,7 @@ impl Day<Vec<Vec<Pos>>> for Day14 {
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::time::Instant;
+
     #[test]
     fn part1_test() -> Result<()> {
         let parsed_input = Day14::parse(INPUT)?;
