@@ -76,3 +76,23 @@ impl<T> Pos<T> {
         Pos { x, y }
     }
 }
+
+pub trait PosComponent {
+    fn x(&self) -> u64;
+    fn y(&self) -> u64;
+    fn z(&self) -> u64;
+}
+
+impl PosComponent for (u64, u64, u64) {
+    fn x(&self) -> u64 {
+        self.0
+    }
+
+    fn y(&self) -> u64 {
+        self.1
+    }
+
+    fn z(&self) -> u64 {
+        self.2
+    }
+}
