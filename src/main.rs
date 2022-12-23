@@ -2,6 +2,7 @@ extern crate core;
 
 use crate::days::day18::Day18;
 use crate::days::day21::Day21;
+use crate::days::day22::Day22;
 // use crate::days::day1::Day1;
 // use crate::days::day10::Day10;
 // use crate::days::day11::Day11;
@@ -43,5 +44,6 @@ fn main() {
     // Day16::exec().unwrap();
     // Day17::exec().unwrap();
     // Day18::exec().unwrap();
-    Day21::exec().unwrap();
+    // Day21::exec().unwrap();
+    Day22::exec().unwrap();
 }
