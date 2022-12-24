@@ -1,4 +1,4 @@
-use crate::utils::{parse_int, Day, PosComponent, Result};
+use crate::utils::{parse_int, Day, PosComponent3D, Result};
 use std::collections::HashSet;
 pub struct Day18 {}
 
