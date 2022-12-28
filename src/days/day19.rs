@@ -9,7 +9,7 @@ impl Day19 {
 }
 
 #[derive(Clone, Debug)]
-struct Blueprint {
+pub struct Blueprint {
     index: u64,
     ore: u64,             // ore
     clay: u64,            // ore
@@ -74,9 +74,6 @@ impl<'a> State<'a> {
     }
 
     pub fn buy_obsidian(&mut self) -> Option<Self> {
-        if self.clay_robots > self.clay {
-            println!("{:?}", self);
-        }
         if (self.ore - self.ore_robots)
             .checked_sub(self.blueprint.obsidian.0)
             .is_some()
@@ -111,32 +108,38 @@ impl<'a> State<'a> {
     }
 
     pub fn best(&mut self) -> Self {
-        if self.minute >= 24 {
-            println!("{}", self.geode);
+        if self.minute >= 32 {
             return self.clone();
         }
-
         self.minute += 1;
         self.ore += self.ore_robots;
         self.clay += self.clay_robots;
         self.obsidian += self.obsidian_robots;
         self.geode += self.geode_robots;
         let mut best_states: Vec<State> = vec![];
+        let mut stay = 0;
+
         if let Some(state) = self.clone().buy_geode() {
             best_states.push(state.clone().best());
+            stay += 1;
+        } else {
+            if let Some(state) = self.clone().buy_obsidian() {
+                best_states.push(state.clone().best());
+                stay += 1;
+            } else {
+                if let Some(state) = self.clone().buy_clay() {
+                    best_states.push(state.clone().best());
+                    stay += 1;
+                }
+                if let Some(state) = self.clone().buy_ore() {
+                    best_states.push(state.clone().best());
+                    stay += 1;
+                }
+            }
         }
-        if let Some(state) = self.clone().buy_obsidian() {
-            best_states.push(state.clone().best());
+        if stay < 2 {
+            best_states.push(self.clone().best());
         }
-        if let Some(state) = self.clone().buy_clay() {
-            best_states.push(state.clone().best());
-        }
-        if let Some(state) = self.clone().buy_ore() {
-            best_states.push(state.clone().best());
-        }
-        best_states.push(self.clone().best());
-
-        // println!("{:?}", self);
 
         *best_states
             .iter()
@@ -167,18 +170,28 @@ impl Day<Vec<Blueprint>> for Day19 {
     }
 
     fn part1(input: Vec<Blueprint>) -> Result<String> {
-        println!("{:#?}", input);
+        return Ok("0".to_string());
         Ok(input
             .iter()
-            .map(|bp| State::new(bp).best())
-            .max_by(|a, b| a.geode.cmp(&b.geode))
-            .unwrap()
-            .geode
+            .map(|bp| {
+                println!("{}", bp.index);
+                State::new(bp).best().geode * bp.index
+            })
+            .sum::<u64>()
             .to_string())
     }
 
     fn part2(input: Vec<Blueprint>) -> Result<String> {
-        Ok("0".to_string())
+        Ok(input
+            .iter()
+            .take(3)
+            .map(|bp| {
+                println!("{}", bp.index);
+                State::new(bp).best().geode
+            })
+            .reduce(|a, b| a * b)
+            .unwrap()
+            .to_string())
     }
 }
 
@@ -201,5 +214,6 @@ mod test {
         Ok(())
     }
 
-    const INPUT: &str = "Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.";
+    const INPUT: &str = "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
+    Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.";
 }
