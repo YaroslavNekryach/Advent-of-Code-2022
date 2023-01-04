@@ -8,52 +8,88 @@ pub struct Day16 {}
 impl Day16 {
     const DAY: u8 = 16;
 
-    pub fn find_max(
-        input: &HashMap<String, Valve>,
-        current: &str,
-        opened: &HashSet<&str>,
-        time: u64,
-    ) -> u64 {
-        if time == 0 {
-            return 0;
-        }
+    fn best_path1(map: &Map, time: u64, pos: String, visited: HashSet<String>) -> u64 {
+        let next: Vec<String> = map
+            .values
+            .keys()
+            .cloned()
+            .filter(|key| !visited.contains(key))
+            .collect();
         let mut results: Vec<u64> = Vec::new();
-        let valve = input.get(current).unwrap();
-        if !opened.contains(&current) {
-            let mut opened_clone = opened.clone();
-            opened_clone.insert(current);
-            let max = Self::find_max(input, current, &opened_clone, time - 1);
-            results.push(max + valve.rate * time);
+        for step in next {
+            let move_time = *map.graph.get(&pos).unwrap().get(&step).unwrap();
+            let time_left = time.checked_sub(move_time + 1);
+            if let Some(time_left) = time_left {
+                let mut new_visited = visited.clone();
+                new_visited.insert(step.clone());
+                let res = map.values.get(&step).unwrap() * time_left
+                    + Self::best_path1(map, time_left, step, new_visited);
+                results.push(res);
+            }
         }
-        for next in &valve.valves {
-            results.push(Self::find_max(
-                input,
-                &next.0,
-                opened,
-                time.saturating_sub(next.1 as u64),
-            ));
+        *results.iter().max().unwrap_or(&0)
+    }
+}
+
+#[derive(Clone, Debug)]
+struct Map {
+    graph: HashMap<String, HashMap<String, u64>>,
+    values: HashMap<String, u64>,
+}
+
+impl Map {
+    pub fn new(input: HashMap<String, Valve>) -> Self {
+        let mut graph = HashMap::new();
+        let mut values = HashMap::new();
+
+        for (valve, value) in input {
+            if value.rate > 0 {
+                values.insert(valve.clone(), value.rate);
+            }
+            let mut inner_hash = HashMap::new();
+            for v in value.valves {
+                inner_hash.insert(v, 1);
+            }
+            graph.insert(valve, inner_hash);
         }
-        let result = results.iter().max().unwrap_or(&0u64);
-        return *result;
+
+        let mut map = Self { graph, values };
+        map.fill();
+        map.filter();
+        map
     }
 
-    pub fn find_max_with_help(
-        input: &HashMap<String, Valve>,
-        current: &str,
-        el_current: &str,
-        opened: &HashSet<&str>,
-        time: u64,
-        prev: Option<&str>,
-        el_prev: Option<&str>,
-    ) -> u64 {
-        0
+    pub fn fill(&mut self) {
+        let c = self.clone();
+        for (from, to) in &mut self.graph {
+            let mut queue: Vec<(String, u64)> =
+                to.clone().into_iter().filter(|v| v.1 == 1).collect();
+            while !queue.is_empty() {
+                let q = queue.remove(0);
+                for t in c.graph.get(&q.0).unwrap() {
+                    if from != t.0 && !to.contains_key(t.0) {
+                        to.insert(t.0.clone(), q.1 + 1);
+                        queue.push((t.0.clone(), q.1 + 1))
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn filter(&mut self) {
+        let values = &self.values;
+        for (from, to) in &mut self.graph {
+            to.retain(|v, _| values.contains_key(v));
+        }
+        self.graph
+            .retain(|v, _| values.contains_key(v) || v == "AA")
     }
 }
 
 #[derive(Clone, Debug)]
 pub struct Valve {
     pub rate: u64,
-    pub valves: Vec<(String, u8)>,
+    pub valves: Vec<String>,
 }
 
 impl Day<HashMap<String, Valve>> for Day16 {
@@ -70,7 +106,7 @@ impl Day<HashMap<String, Valve>> for Day16 {
             let valves = captures
                 .index(3)
                 .split_terminator(", ")
-                .map(|v| (v.into(), 1))
+                .map(|v| v.into())
                 .collect();
             result.insert(
                 captures.index(1).to_string(),
@@ -83,48 +119,14 @@ impl Day<HashMap<String, Valve>> for Day16 {
         Ok(result)
     }
 
-    fn part1(mut input: HashMap<String, Valve>) -> Result<String> {
-        input
-            .clone()
-            .into_iter()
-            .filter(|v| v.1.rate == 0 && v.1.valves.len() == 2)
-            .for_each(|v| {
-                println!("Process {}", v.0);
-                let v1 = input.get(&v.0).unwrap().valves[0].clone();
-                let v2 = input.get(&v.0).unwrap().valves[1].clone();
-                let l1 = input
-                    .get_mut(&v1.0)
-                    .unwrap()
-                    .valves
-                    .iter_mut()
-                    .find(|k| k.0 == v.0)
-                    .unwrap();
-                println!("from {:?}", v1);
-
-                l1.0 = v2.0.clone();
-                l1.1 += v2.1;
-                let l2 = input
-                    .get_mut(&v2.0)
-                    .unwrap()
-                    .valves
-                    .iter_mut()
-                    .find(|k| k.0 == v.0)
-                    .unwrap();
-                println!("to {:?}", v2);
-                l2.0 = v1.0;
-                l2.1 += v1.1;
-                input.remove(&v.0);
-            });
-        println!("{:#?}", input);
-        // Ok("0".to_string())
-        Ok(Day16::find_max(&input, "AA", &HashSet::new(), 29).to_string())
+    fn part1(input: HashMap<String, Valve>) -> Result<String> {
+        let map = Map::new(input);
+        let result = Day16::best_path1(&map, 30, "AA".to_string(), HashSet::new());
+        Ok(result.to_string())
     }
 
     fn part2(input: HashMap<String, Valve>) -> Result<String> {
-        Ok(
-            Day16::find_max_with_help(&input, "AA", "AA", &HashSet::new(), 25, None, None)
-                .to_string(),
-        )
+        Ok("0".to_string())
     }
 }
 

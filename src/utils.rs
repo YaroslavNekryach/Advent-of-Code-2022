@@ -3,7 +3,7 @@ use std::error::Error;
 use std::result;
 use std::time::{Duration, Instant};
 
-const SESSION: &str = "53616c7465645f5f7998bb14334539d997cfee9321c8e5d3f72f056853a51a004b29784458b5208668ec450c9083a997dbe65a1ef7927c85173a2ee31e6f7065";
+const SESSION: &str = "53616c7465645f5f43efd92d07cb64cd85208fd37f71fbba5317609a979f6cb7fb4c6c0e21235b749a2745857b572c98a0306b42ad295893a73e0baa859779e1";
 const YEAR: &str = "2022";
 const URL: &str = "https://adventofcode.com";
 
