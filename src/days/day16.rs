@@ -1,6 +1,8 @@
 use crate::utils::{Day, Result};
+use itertools::Itertools;
 use regex::Regex;
 use std::collections::{HashMap, HashSet};
+use std::fmt::format;
 use std::ops::Index;
 
 pub struct Day16 {}
@@ -9,25 +11,109 @@ impl Day16 {
     const DAY: u8 = 16;
 
     fn best_path1(map: &Map, time: u64, pos: String, visited: HashSet<String>) -> u64 {
-        let next: Vec<String> = map
-            .values
-            .keys()
-            .cloned()
-            .filter(|key| !visited.contains(key))
-            .collect();
         let mut results: Vec<u64> = Vec::new();
-        for step in next {
-            let move_time = *map.graph.get(&pos).unwrap().get(&step).unwrap();
+        for step in map.values.keys() {
+            if visited.contains(step) {
+                continue;
+            }
+            let move_time = *map.graph.get(&pos).unwrap().get(step).unwrap();
             let time_left = time.checked_sub(move_time + 1);
             if let Some(time_left) = time_left {
                 let mut new_visited = visited.clone();
                 new_visited.insert(step.clone());
-                let res = map.values.get(&step).unwrap() * time_left
-                    + Self::best_path1(map, time_left, step, new_visited);
+                let res = map.values.get(step).unwrap() * time_left
+                    + Self::best_path1(map, time_left, step.clone(), new_visited);
                 results.push(res);
             }
         }
         *results.iter().max().unwrap_or(&0)
+    }
+
+    fn best_path2(
+        map: &Map,
+        mut time1: u64,
+        mut time2: u64,
+        mut pos1: String,
+        mut pos2: String,
+        mut visited: HashSet<String>,
+        prev1: Vec<String>,
+        prev2: Vec<String>,
+    ) -> (u64, Vec<String>, Vec<String>) {
+        let mut points = 0;
+        for step in &prev1 {
+            let move_time = *map.graph.get(&pos1).unwrap().get(step).unwrap();
+            visited.insert(step.clone());
+            pos1 = step.clone();
+            time1 -= move_time + 1;
+            points += map.values.get(step).unwrap() * time1;
+        }
+        for step in &prev2 {
+            let move_time = *map.graph.get(&pos2).unwrap().get(step).unwrap();
+            visited.insert(step.clone());
+            pos2 = step.clone();
+            time2 -= move_time + 1;
+            points += map.values.get(step).unwrap() * time2;
+        }
+        let mut results: Vec<(u64, Vec<String>, Vec<String>)> = Vec::new();
+        if time1 < time2 {
+            for step in map.values.keys() {
+                if visited.contains(step) {
+                    continue;
+                }
+                let move_time = *map.graph.get(&pos2).unwrap().get(step).unwrap();
+                let time_left = time2.checked_sub(move_time + 1);
+                if let Some(time_left) = time_left {
+                    let mut new_visited = visited.clone();
+                    new_visited.insert(step.clone());
+                    let (res, mut rest1, mut rest2) = Self::best_path2(
+                        map,
+                        time1,
+                        time_left,
+                        pos1.clone(),
+                        step.clone(),
+                        new_visited,
+                        Vec::new(),
+                        Vec::new(),
+                    );
+                    let res = map.values.get(step).unwrap() * time_left + res;
+                    let mut r = vec![step.clone()];
+                    r.append(&mut rest2);
+                    results.push((res, rest1, r));
+                }
+            }
+        } else {
+            for step in map.values.keys() {
+                if visited.contains(step) {
+                    continue;
+                }
+                let move_time = *map.graph.get(&pos1).unwrap().get(step).unwrap();
+                let time_left = time1.checked_sub(move_time + 1);
+                if let Some(time_left) = time_left {
+                    let mut new_visited = visited.clone();
+                    new_visited.insert(step.clone());
+                    let (res, mut rest1, mut rest2) = Self::best_path2(
+                        map,
+                        time_left,
+                        time2,
+                        step.clone(),
+                        pos2.clone(),
+                        new_visited,
+                        Vec::new(),
+                        Vec::new(),
+                    );
+                    let res = map.values.get(step).unwrap() * time_left + res;
+                    let mut r = vec![step.clone()];
+                    r.append(&mut rest1);
+                    results.push((res, r, rest2));
+                }
+            }
+        }
+        let result = results
+            .iter()
+            .cloned()
+            .max_by(|a, b| a.0.cmp(&b.0))
+            .unwrap_or((0, vec![], vec![]));
+        (result.0 + points, result.1, result.2)
     }
 }
 
@@ -78,7 +164,7 @@ impl Map {
 
     pub fn filter(&mut self) {
         let values = &self.values;
-        for (from, to) in &mut self.graph {
+        for (_, to) in &mut self.graph {
             to.retain(|v, _| values.contains_key(v));
         }
         self.graph
@@ -126,7 +212,33 @@ impl Day<HashMap<String, Valve>> for Day16 {
     }
 
     fn part2(input: HashMap<String, Valve>) -> Result<String> {
-        Ok("0".to_string())
+        let map = Map::new(input);
+        let time = 15;
+        let result = Day16::best_path2(
+            &map,
+            time,
+            time,
+            "AA".to_string(),
+            "AA".to_string(),
+            HashSet::new(),
+            vec![],
+            vec![],
+        );
+        println!("{:?}", result.1);
+        println!("{:?}", result.2);
+
+        let time = 26;
+        let result = Day16::best_path2(
+            &map,
+            time,
+            time,
+            "AA".to_string(),
+            "AA".to_string(),
+            HashSet::new(),
+            result.1,
+            result.2,
+        );
+        Ok(result.0.to_string())
     }
 }
 
